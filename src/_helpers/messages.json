@@ -1,0 +1,9 @@
+{
+	"NOT_EMIAL": "Please enter an email address",
+	"WRONG_PASS_FORMAT": "Wrong password format",
+	"PASS_FORMAT": "Password should have lower case & upper case letters, and a number",
+	"USER_NOT_FOUND": "User not found, signup",
+	"WRONG_PASS": "You entered a wrong password",
+	"SUCCESS": "Operation was a success",
+	"FAILURE": "Something went wrong"
+}
