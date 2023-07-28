@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_AUTH_DOMAIN,
@@ -12,4 +11,4 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
+export const app = initializeApp(firebaseConfig, "client");

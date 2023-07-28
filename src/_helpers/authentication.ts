@@ -14,6 +14,20 @@ export async function authenticate(email: string, password: string) {
 	try {
 		const response = await signInWithEmailAndPassword(auth, email, password);
 		const idToken = await response.user.getIdToken();
+		const params = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json; charset=utf8',
+				Connection: 'keep-alive',
+			},
+			body: JSON.stringify({ idToken: idToken }),
+		};
+		const sessionResponse = await fetch('/api/auth', params);
+		if (!sessionResponse.ok) {
+			return { message: sessionResponse.statusText };
+		}
+		const conResponse = await sessionResponse.json();
+		console.log({ conResponse });
 		return {
 			message: messages.SUCCESS,
 			refreshToken: response.user.refreshToken,
