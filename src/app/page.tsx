@@ -3,6 +3,8 @@
 import { ReactEventHandler, useState } from 'react';
 
 import cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+
 import { authenticate } from '@/_helpers/authentication';
 import messages from '@/_helpers/messages.json';
 import TextInput from './components/TextInput';
@@ -18,6 +20,7 @@ export default function Home() {
 		message: '',
 		type: undefined,
 	});
+	const router = useRouter();
 
 	const onLogin: ReactEventHandler = async (e) => {
 		e.preventDefault;
@@ -26,6 +29,13 @@ export default function Home() {
 			response.refreshToken &&
 				cookies.set('refreshToken', response.refreshToken);
 			response.idToken && cookies.set('idToken', response.idToken);
+			response.session &&
+				cookies.set(
+					'session',
+					response.session.sessionCookie,
+					response.session.options
+				);
+			router.push('/home');
 			return setLoginFeedback({ message: '', type: undefined });
 		}
 		if (!response?.message.includes('Firebase')) {

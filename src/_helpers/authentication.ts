@@ -27,9 +27,9 @@ export async function authenticate(email: string, password: string) {
 			return { message: sessionResponse.statusText };
 		}
 		const conResponse = await sessionResponse.json();
-		console.log({ conResponse });
 		return {
 			message: messages.SUCCESS,
+			session: conResponse,
 			refreshToken: response.user.refreshToken,
 			idToken,
 		};
