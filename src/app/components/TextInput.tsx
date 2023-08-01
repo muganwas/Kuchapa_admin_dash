@@ -10,7 +10,7 @@ export default function TextInput({
 	onChange,
 }: textInput) {
 	return (
-		<div className={className || 'flex flex-col w-full p-2'}>
+		<div className={className || 'flex flex-col w-full'}>
 			<label className='flex flex-col p-1'>
 				{labelText}
 				<input
@@ -19,7 +19,7 @@ export default function TextInput({
 					value={value}
 					onChange={onChange}
 					placeholder={placeholder}
-					className='w-full h-10 p-2 rounded'
+					className='w-full h-10 p-2 bg-gray/50 rounded'
 				></input>
 			</label>
 		</div>

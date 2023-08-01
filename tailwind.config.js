@@ -8,7 +8,11 @@ module.exports = {
   theme: {
     colors: {
       'error': '#dc2626',
-      'success': '#22c55e'
+      'success': '#22c55e',
+      'gray': '#CED4DB',
+      'black': '#000000',
+      'white': '#ffffff',
+      'red': '#C22123'
     },
     extend: {
       backgroundImage: {

@@ -7,7 +7,7 @@ export default function Button({
 	onClick,
 }: buttonInput) {
 	return (
-		<div className={className || 'flex flex-col w-full p-2'}>
+		<div className={className || 'flex flex-col w-full'}>
 			<input
 				id={id}
 				type='button'
