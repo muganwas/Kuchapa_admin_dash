@@ -4,6 +4,7 @@ import PaginationButton from './paginationButton';
 export interface list {
 	name: string;
 	itemName: string;
+	secondaryItemName?: string;
 	items: any[] | undefined;
 	pagesCount: number;
 	currentPage: number;
@@ -17,47 +18,77 @@ export default function List({
 	name,
 	items,
 	itemName,
+	secondaryItemName,
 	pagesCount,
 	currentPage,
 	classes,
 	onPrev,
 	onNext,
 	onItemSelect,
+	onPageSelect,
 }: list) {
 	const [pages, setPages] = useState<number[] | undefined>();
 	useEffect(() => {
-		setPages(new Array(pagesCount).fill(0));
+		setPages(new Array(pagesCount < 5 ? pagesCount : 5).fill(0));
 	}, [pagesCount]);
 	return (
-		<div className={classes || 'flex flex-col'}>
-			<div>{name}</div>
+		<div
+			className={classes || 'flex flex-col p-2 shadow-sm h-96 justify-between'}
+		>
 			<div className='flex flex-col'>
-				{items &&
-					items.map((item) => <span key={item.id}>{item[itemName]}</span>)}
+				<div className='flex mb-5 font-bold'>{name}</div>
+				<div className='flex flex-col justify-center'>
+					{items &&
+						items.map((item) => (
+							<div
+								className='flex flex-col p-1 border border-solid border-gray/50 h-10 mt-1 justify-center cursor-pointer'
+								key={item.id}
+								onClick={onItemSelect}
+							>
+								{secondaryItemName && (
+									<span className='flex text-xs'>
+										{item[secondaryItemName]}
+									</span>
+								)}
+								<span className='flex'>{item[itemName]}</span>
+							</div>
+						))}
+				</div>
 			</div>
-			<div id='pagination'>
+			<div id='pagination' className='flex flex-row justify-center'>
 				<PaginationButton
-					onSelect={onPrev}
+					onSelect={(e) => {
+						if (currentPage > 1) onPrev && onPrev(e);
+					}}
 					text='Prev'
-					className='inline-block p-2 border border-solid border-black/5 mr-1 my-1 cursor-pointer'
+					className={`inline-block justify-center items-center p-2 border border-solid border-black/5 mr-1 my-1 ${
+						currentPage > 1 && pagesCount > 1
+							? 'cursor-pointer'
+							: 'cursor-not-allowed'
+					}`}
 				/>
-				{pages &&
-					pages.map((page, i) => (
-						<PaginationButton
-							onSelect={onItemSelect}
-							text={i + 1 + ''}
-							key={i}
-							className={
-								i === currentPage
-									? 'inline-block p-2 border border-solid border-red/30 m-1 cursor-pointer'
-									: undefined
-							}
-						/>
-					))}
+				{pages?.map((page, i) => (
+					<PaginationButton
+						onSelect={(e) => {
+							if (currentPage !== i + 1) onPageSelect && onPageSelect(e);
+						}}
+						text={i + 1 + ''}
+						key={i}
+						className={
+							i === currentPage
+								? 'inline-block p-2 border border-solid border-red/30 m-1 cursor-pointer'
+								: undefined
+						}
+					/>
+				))}
 				<PaginationButton
 					onSelect={onNext}
 					text='Next'
-					className='inline-block p-2 border border-solid border-black/5 ml-1 my-1 cursor-pointer'
+					className={`inline-block justify-center items-center p-2 border border-solid border-black/5 ml-1 my-1 ${
+						pagesCount > 1 && currentPage < pagesCount
+							? 'cursor-pointer'
+							: 'cursor-not-allowed'
+					}`}
 				/>
 			</div>
 		</div>

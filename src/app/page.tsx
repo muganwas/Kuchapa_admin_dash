@@ -27,14 +27,16 @@ export default function Home() {
 		const response = await authenticate(username, password);
 		if (response.message.includes('a success')) {
 			response.refreshToken &&
-				cookies.set('refreshToken', response.refreshToken);
-			response.idToken && cookies.set('idToken', response.idToken);
+				cookies.set('refreshToken', response.refreshToken, {
+					sameSite: 'strict',
+				});
+			response.idToken &&
+				cookies.set('idToken', response.idToken, { sameSite: 'strict' });
 			response.session &&
-				cookies.set(
-					'session',
-					response.session.sessionCookie,
-					response.session.options
-				);
+				cookies.set('session', response.session.sessionCookie, {
+					...response.session.options,
+					sameSite: 'lax',
+				});
 			router.push('/home');
 			return setLoginFeedback({ message: '', type: undefined });
 		}

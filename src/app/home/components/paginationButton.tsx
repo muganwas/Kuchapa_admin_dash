@@ -14,7 +14,8 @@ export default function PaginationButton({
 		<span
 			onClick={onSelect}
 			className={
-				className || 'p-2 border border-solid border-black/10 cursor-pointer'
+				className ||
+				'p-2 border border-solid border-black/10 my-1 justify-center items-center cursor-pointer'
 			}
 		>
 			{text}

@@ -1,5 +1,5 @@
 import { SERVER_URL } from '@/_helpers/utils';
-export async function fetchMainCategories(page = 1, limit = 0) {
+export async function fetchMainCategories(page = 1, limit = 7) {
 	const url = SERVER_URL + `main_category?page=${page}&limit=${limit}`;
 	try {
 		const result = await fetch(url);
@@ -9,7 +9,7 @@ export async function fetchMainCategories(page = 1, limit = 0) {
 		return { message: 'Error', error: e.message };
 	}
 }
-export async function fetchSubCategories(page = 1, limit = 0) {
+export async function fetchSubCategories(page = 1, limit = 7) {
 	const url = SERVER_URL + `sub_category?page=${page}&limit=${limit}`;
 	try {
 		const result = await fetch(url);
@@ -19,6 +19,18 @@ export async function fetchSubCategories(page = 1, limit = 0) {
 		return { message: 'Error', error: e.message };
 	}
 }
+
+export async function fetchServices(page = 1, limit = 7) {
+	const url = SERVER_URL + `service?page=${page}&limit=${limit}`;
+	try {
+		const result = await fetch(url);
+		const serviceData = await result.json();
+		return serviceData;
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
+	}
+}
+
 export async function createMainCategory(name: string) {
 	const url = SERVER_URL + 'main_category/create';
 	try {
@@ -36,8 +48,8 @@ export async function createMainCategory(name: string) {
 		return { message: 'Error', error: e.message };
 	}
 }
-export async function createSubCategory(name: string, mainCategoryId: string) {
-	const url = SERVER_URL + 'main_category/create';
+export async function createSubCategory(name: string, mainCategoryId = '') {
+	const url = SERVER_URL + 'sub_category/create';
 	try {
 		const response = await fetch(url, {
 			method: 'POST',
@@ -45,9 +57,41 @@ export async function createSubCategory(name: string, mainCategoryId: string) {
 				'Content-Type': 'application/json',
 				Connection: 'keep-alive',
 			},
-			body: JSON.stringify({ main_category: name }),
+			body: JSON.stringify({
+				main_category: mainCategoryId,
+				sub_category: name,
+			}),
 		});
 		const data = await response.json();
+		return data;
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
+	}
+}
+
+export async function createService(
+	name: string,
+	mainCategoryId = '',
+	subCategoryId = '',
+	image = name + '_p.png'
+) {
+	const url = SERVER_URL + 'service/create';
+	try {
+		const response = await fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Connection: 'keep-alive',
+			},
+			body: JSON.stringify({
+				main_category: mainCategoryId,
+				sub_category: subCategoryId,
+				service_name: name,
+				image,
+			}),
+		});
+		const data = await response.json();
+		console.log({ data });
 		return data;
 	} catch (e: any) {
 		return { message: 'Error', error: e.message };
