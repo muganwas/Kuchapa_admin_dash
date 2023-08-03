@@ -21,7 +21,6 @@ export default function Home() {
 		type: undefined,
 	});
 	const router = useRouter();
-
 	const onLogin: ReactEventHandler = async (e) => {
 		e.preventDefault;
 		const response = await authenticate(username, password);

@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { emailRegex, passwordRegex } from './utils';
 import messages from './messages.json';
 import { app } from '@/_firebase/config';
@@ -34,6 +34,15 @@ export async function authenticate(email: string, password: string) {
 			idToken,
 		};
 	} catch (e: any) {
-		return { message: e.message };
+		return { message: 'Error', error: e.message };
+	}
+}
+
+export async function logout() {
+	try {
+		const signoutInfo = signOut(auth);
+		return { message: messages.SUCCESS, info: signoutInfo };
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
 	}
 }

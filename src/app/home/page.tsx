@@ -8,6 +8,8 @@ import {
 	ReactEventHandler,
 } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import List from './components/list';
 import TextInput from '../components/TextInput';
 import Button from '../components/Button';
@@ -22,6 +24,9 @@ import {
 	fetchServices,
 	updateMainCategory,
 } from '@/_helpers/data';
+import Link from 'next/link';
+import { logout } from '@/_helpers/authentication';
+import Cookies from 'js-cookie';
 
 export interface mainCategory {
 	id?: string;
@@ -49,6 +54,8 @@ export type mainSubService = {
 };
 
 export default function Home() {
+	const router = useRouter();
+
 	const [mainCategories, setMainCategories] = useState<any[] | undefined>();
 	const [mainCategoriesPage, setMainCategoriesPage] = useState(1);
 	const [mainCategoriesPagesCount, setMainCategoryPagesCount] = useState(1);
@@ -229,8 +236,29 @@ export default function Home() {
 		callBack();
 	};
 
+	const onLogout: ReactEventHandler = async (e) => {
+		e.preventDefault();
+		const logoutInfo = await logout();
+		if (logoutInfo.message.includes('success')) {
+			Cookies.remove('session');
+			Cookies.remove('refreshToken');
+			Cookies.remove('idToken');
+			router.push('/');
+		}
+	};
+
 	return (
 		<main className='flex flex-col relative h-full p-20'>
+			<div id='welcome-bar' className='flex flex-row justify-between'>
+				<span className='inline-block p-1 text-sm'>Welcome back Admin</span>
+				<span
+					id='logout'
+					className='inline-block p-1 text-sm font-bold cursor-pointer'
+					onClick={onLogout}
+				>
+					Logout
+				</span>
+			</div>
 			<div className='flex flex-col p-4 text-bold bg-gray'>Admin Dashboard</div>
 			<div className='flex flex-row p-4'>
 				<div id='main-category-container' className='flex flex-col flex-1'>
