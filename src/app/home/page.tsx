@@ -98,9 +98,15 @@ export default function Home() {
 
 	useEffect(() => {
 		getMainCategoryData();
+	}, [getMainCategoryData]);
+
+	useEffect(() => {
 		getSubCategoryData();
+	}, [getSubCategoryData]);
+
+	useEffect(() => {
 		getServicesData();
-	}, [getMainCategoryData, getSubCategoryData, getServicesData]);
+	}, [getServicesData]);
 
 	const onSubmitCategory: ReactEventHandler = async (e) => {
 		e.preventDefault();
@@ -251,7 +257,10 @@ export default function Home() {
 								<Button
 									id='submit-category'
 									labelText='Add Category'
-									onClick={onSubmitCategory}
+									onClick={(e) => {
+										onSubmitCategory(e);
+										toggleMainCategoryModal(e);
+									}}
 								/>
 							</div>
 						</form>
@@ -267,6 +276,22 @@ export default function Home() {
 									secondaryItemName='main_category'
 									items={subCategories}
 									currentPage={subCategoriesPage}
+									onNext={(e) => {
+										e.preventDefault();
+										if (subCategoriesPagesCount > 1) {
+											setSubCategoriesPage(subCategoriesPage + 1);
+										}
+									}}
+									onPageSelect={(e, page) => {
+										e.preventDefault();
+										setSubCategoriesPage(page);
+									}}
+									onPrev={(e) => {
+										e.preventDefault();
+										if (subCategoriesPagesCount > 1 && subCategoriesPage > 1) {
+											setSubCategoriesPage(subCategoriesPage - 1);
+										}
+									}}
 									pagesCount={subCategoriesPagesCount}
 								/>
 							)}
@@ -318,7 +343,10 @@ export default function Home() {
 								<Button
 									id='submit-sub-category'
 									labelText='Add Sub Category'
-									onClick={onSubmitSubCategory}
+									onClick={(e) => {
+										onSubmitSubCategory(e);
+										toggleSubCategoryModal(e);
+									}}
 								/>
 							</div>
 						</form>
@@ -407,7 +435,10 @@ export default function Home() {
 								<Button
 									id='submit-service'
 									labelText='Add Service'
-									onClick={onSubmitService}
+									onClick={(e) => {
+										onSubmitService(e);
+										toggleServicesModal(e);
+									}}
 								/>
 							</div>
 						</form>

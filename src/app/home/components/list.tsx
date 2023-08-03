@@ -1,4 +1,4 @@
-import { ReactEventHandler, useState, useEffect } from 'react';
+import { ReactEventHandler, useState, useEffect, SyntheticEvent } from 'react';
 import PaginationButton from './paginationButton';
 
 export interface list {
@@ -12,7 +12,7 @@ export interface list {
 	onPrev?: ReactEventHandler;
 	onNext?: ReactEventHandler;
 	onItemSelect?: ReactEventHandler;
-	onPageSelect?: ReactEventHandler;
+	onPageSelect?: (e: SyntheticEvent, c: number) => void;
 }
 export default function List({
 	name,
@@ -33,7 +33,7 @@ export default function List({
 	}, [pagesCount]);
 	return (
 		<div
-			className={classes || 'flex flex-col p-2 shadow-sm h-96 justify-between'}
+			className={classes || 'flex flex-col p-2 shadow-sm h-1/2 justify-between'}
 		>
 			<div className='flex flex-col'>
 				<div className='flex mb-5 font-bold'>{name}</div>
@@ -55,13 +55,13 @@ export default function List({
 						))}
 				</div>
 			</div>
-			<div id='pagination' className='flex flex-row justify-center'>
+			<div id='pagination' className='flex flex-row justify-end'>
 				<PaginationButton
 					onSelect={(e) => {
 						if (currentPage > 1) onPrev && onPrev(e);
 					}}
 					text='Prev'
-					className={`inline-block justify-center items-center p-2 border border-solid border-black/5 mr-1 my-1 ${
+					className={`inline-block text-sm justify-center items-center p-1 border border-solid border-black/5 mr-1 my-1 ${
 						currentPage > 1 && pagesCount > 1
 							? 'cursor-pointer'
 							: 'cursor-not-allowed'
@@ -70,13 +70,13 @@ export default function List({
 				{pages?.map((page, i) => (
 					<PaginationButton
 						onSelect={(e) => {
-							if (currentPage !== i + 1) onPageSelect && onPageSelect(e);
+							if (currentPage !== i + 1) onPageSelect && onPageSelect(e, i + 1);
 						}}
 						text={i + 1 + ''}
 						key={i}
 						className={
-							i === currentPage
-								? 'inline-block p-2 border border-solid border-red/30 m-1 cursor-pointer'
+							i + 1 === currentPage
+								? 'inline-block text-sm p-1 border border-solid border-red/30 my-1 cursor-pointer'
 								: undefined
 						}
 					/>
@@ -84,7 +84,7 @@ export default function List({
 				<PaginationButton
 					onSelect={onNext}
 					text='Next'
-					className={`inline-block justify-center items-center p-2 border border-solid border-black/5 ml-1 my-1 ${
+					className={`inline-block text-sm justify-center items-center p-1 border border-solid border-black/5 ml-1 my-1 ${
 						pagesCount > 1 && currentPage < pagesCount
 							? 'cursor-pointer'
 							: 'cursor-not-allowed'

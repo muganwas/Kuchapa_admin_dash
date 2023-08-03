@@ -15,7 +15,7 @@ export default function PaginationButton({
 			onClick={onSelect}
 			className={
 				className ||
-				'p-2 border border-solid border-black/10 my-1 justify-center items-center cursor-pointer'
+				'inline-block p-1 text-sm border border-solid border-black/10 my-1 justify-center items-center cursor-pointer'
 			}
 		>
 			{text}
