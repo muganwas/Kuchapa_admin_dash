@@ -91,9 +91,12 @@ export async function createService(
 			}),
 		});
 		const data = await response.json();
-		console.log({ data });
 		return data;
 	} catch (e: any) {
 		return { message: 'Error', error: e.message };
 	}
+}
+
+export async function updateMainCategory(id = '') {
+	/** TODO: implement update main category */
 }

@@ -4,7 +4,7 @@ export default function TextInput({
 	id,
 	type = 'text',
 	className,
-	value,
+	value = '',
 	placeholder,
 	labelText,
 	onChange,

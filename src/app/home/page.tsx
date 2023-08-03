@@ -6,7 +6,6 @@ import {
 	useRef,
 	useCallback,
 	ReactEventHandler,
-	MouseEvent,
 } from 'react';
 
 import List from './components/list';
@@ -21,17 +20,32 @@ import {
 	createSubCategory,
 	createService,
 	fetchServices,
+	updateMainCategory,
 } from '@/_helpers/data';
 
-export type mainCategory = {
-	id: string;
-	main_category: string;
-};
+export interface mainCategory {
+	id?: string;
+	main_category?: string;
+}
 
-export type subCategory = {
-	id: string;
-	main_category: string;
-	sub_category: string;
+export interface subCategory {
+	id?: string;
+	main_category?: string;
+	sub_category?: string;
+}
+
+export interface service {
+	id?: string;
+	main_category?: string;
+	sub_category?: string;
+	service_name?: string;
+}
+
+export type mainSubService = {
+	id?: string;
+	main_category?: string;
+	sub_category?: string;
+	service_name?: string;
 };
 
 export default function Home() {
@@ -47,7 +61,7 @@ export default function Home() {
 	const [subCategoriesPagesCount, setSubCategoryPagesCount] = useState(1);
 
 	const [services, setServices] = useState<any[] | undefined>();
-	const [servicesPage, setServicessPage] = useState(1);
+	const [servicesPage, setServicesPage] = useState(1);
 	const [servicesMainCategory, setServicesMainCategory] = useState<
 		mainCategory | undefined
 	>();
@@ -63,6 +77,8 @@ export default function Home() {
 	const mainCategoryModal = useRef<HTMLDivElement | null>();
 	const subCategoryModal = useRef<HTMLDivElement | null>();
 	const serviceModal = useRef<HTMLDivElement | null>();
+
+	const [selectedElement, setSelectedItem] = useState<mainSubService>();
 
 	const [feedback, setFeedback] = useState('');
 
@@ -110,7 +126,10 @@ export default function Home() {
 
 	const onSubmitCategory: ReactEventHandler = async (e) => {
 		e.preventDefault();
-		const data = await createMainCategory(categoryName);
+
+		let data;
+		if (!selectedElement) data = await createMainCategory(categoryName);
+		else data = await updateMainCategory(selectedElement.id);
 		if (data.message === 'Error') return setFeedback(data.message);
 		if (data.result) getMainCategoryData();
 		else setFeedback(data.message);
@@ -148,6 +167,7 @@ export default function Home() {
 			newClass = (originalClass as string).replace('hidden', '');
 		} else {
 			newClass = originalClass + 'hidden';
+			setSelectedItem(undefined);
 		}
 		mainCategoryModal.current?.setAttribute('class', newClass as string);
 	};
@@ -161,6 +181,7 @@ export default function Home() {
 			newClass = (originalClass as string).replace('hidden', '');
 		} else {
 			newClass = originalClass + 'hidden';
+			setSelectedItem(undefined);
 		}
 		subCategoryModal.current?.setAttribute('class', newClass as string);
 	};
@@ -174,6 +195,7 @@ export default function Home() {
 			newClass = (originalClass as string).replace('hidden', '');
 		} else {
 			newClass = originalClass + 'hidden';
+			setSelectedItem(undefined);
 		}
 		serviceModal.current?.setAttribute('class', newClass as string);
 	};
@@ -218,6 +240,33 @@ export default function Home() {
 								<List
 									name='Main Categories'
 									itemName='main_category'
+									onNext={(e) => {
+										e.preventDefault();
+										if (mainCategoriesPagesCount > 1) {
+											setMainCategoriesPage(mainCategoriesPage + 1);
+										}
+									}}
+									onPageSelect={(e, page) => {
+										e.preventDefault();
+										setMainCategoriesPage(page);
+									}}
+									onPrev={(e) => {
+										e.preventDefault();
+										if (
+											mainCategoriesPagesCount > 1 &&
+											mainCategoriesPage > 1
+										) {
+											setMainCategoriesPage(mainCategoriesPage - 1);
+										}
+									}}
+									onItemSelect={(e, item) => {
+										e.preventDefault;
+										setSelectedItem({
+											id: item?.id,
+											main_category: item?.main_category,
+										});
+										toggleMainCategoryModal(e);
+									}}
 									items={mainCategories}
 									currentPage={mainCategoriesPage}
 									pagesCount={mainCategoriesPagesCount}
@@ -243,11 +292,16 @@ export default function Home() {
 							onClick={formClicks}
 							className='flex flex-col bg-white w-1/2 p-5'
 						>
-							<span>Add New Main Category</span>
+							<span>
+								{selectedElement
+									? 'Update Main Category '
+									: 'Add New Main Category'}
+							</span>
 							<div className='flex flex-col py-2'>
 								<TextInput
 									id='category-name'
 									placeholder='Category Name'
+									value={selectedElement?.main_category}
 									onChange={(e) =>
 										setCategoryName((e.target as HTMLInputElement).value)
 									}
@@ -256,7 +310,9 @@ export default function Home() {
 							<div className='flex flex-col py-2'>
 								<Button
 									id='submit-category'
-									labelText='Add Category'
+									labelText={
+										selectedElement ? 'Update Category' : 'Add Category'
+									}
 									onClick={(e) => {
 										onSubmitCategory(e);
 										toggleMainCategoryModal(e);
@@ -285,6 +341,15 @@ export default function Home() {
 									onPageSelect={(e, page) => {
 										e.preventDefault();
 										setSubCategoriesPage(page);
+									}}
+									onItemSelect={(e, item) => {
+										e.preventDefault;
+										setSelectedItem({
+											id: item?.id,
+											main_category: item?.main_category,
+											sub_category: item?.sub_category,
+										});
+										toggleSubCategoryModal(e);
 									}}
 									onPrev={(e) => {
 										e.preventDefault();
@@ -360,6 +425,32 @@ export default function Home() {
 									name='Services'
 									itemName='service_name'
 									secondaryItemName='sub_category'
+									onNext={(e) => {
+										e.preventDefault();
+										if (servicesPagesCount > 1) {
+											setServicesPage(servicesPage + 1);
+										}
+									}}
+									onPageSelect={(e, page) => {
+										e.preventDefault();
+										setServicesPage(page);
+									}}
+									onItemSelect={(e, item) => {
+										e.preventDefault;
+										setSelectedItem({
+											id: item?.id,
+											main_category: item?.main_category,
+											sub_category: item?.sub_category,
+											service_name: item?.service_name,
+										});
+										toggleServicesModal(e);
+									}}
+									onPrev={(e) => {
+										e.preventDefault();
+										if (servicesPagesCount > 1 && servicesPage > 1) {
+											setServicesPage(servicesPage - 1);
+										}
+									}}
 									items={services}
 									currentPage={servicesPage}
 									pagesCount={servicesPagesCount}

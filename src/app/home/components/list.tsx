@@ -1,17 +1,18 @@
 import { ReactEventHandler, useState, useEffect, SyntheticEvent } from 'react';
 import PaginationButton from './paginationButton';
+import { mainSubService, mainCategory, subCategory, service } from '../page';
 
 export interface list {
 	name: string;
 	itemName: string;
 	secondaryItemName?: string;
-	items: any[] | undefined;
+	items?: any[];
 	pagesCount: number;
 	currentPage: number;
 	classes?: string;
 	onPrev?: ReactEventHandler;
 	onNext?: ReactEventHandler;
-	onItemSelect?: ReactEventHandler;
+	onItemSelect?: (e: SyntheticEvent, c: mainSubService) => void;
 	onPageSelect?: (e: SyntheticEvent, c: number) => void;
 }
 export default function List({
@@ -42,15 +43,19 @@ export default function List({
 						items.map((item) => (
 							<div
 								className='flex flex-col p-1 border border-solid border-gray/50 h-10 mt-1 justify-center cursor-pointer'
-								key={item.id}
-								onClick={onItemSelect}
+								key={item?.id}
+								onClick={(e) => {
+									onItemSelect && onItemSelect(e, item);
+								}}
 							>
 								{secondaryItemName && (
 									<span className='flex text-xs'>
-										{item[secondaryItemName]}
+										{item && item[secondaryItemName as keyof mainSubService]}
 									</span>
 								)}
-								<span className='flex'>{item[itemName]}</span>
+								<span className='flex'>
+									{item && item[itemName as keyof mainSubService]}
+								</span>
 							</div>
 						))}
 				</div>
