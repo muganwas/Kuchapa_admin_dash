@@ -1,4 +1,5 @@
 import { SERVER_URL } from '@/_helpers/utils';
+import { mainCategory } from '@/app/home/page';
 export async function fetchMainCategories(page = 1, limit = 7) {
 	const url = SERVER_URL + `main_category?page=${page}&limit=${limit}`;
 	try {
@@ -97,6 +98,20 @@ export async function createService(
 	}
 }
 
-export async function updateMainCategory(id = '') {
-	/** TODO: implement update main category */
+export async function updateMainCategory(id = '', updateInfo: mainCategory) {
+	const url = SERVER_URL + 'main_category/';
+	try {
+		const response = await fetch(url, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Connection: 'keep-alive',
+			},
+			body: JSON.stringify({ id, updateInfo }),
+		});
+		const updateResults = await response.json();
+		return updateResults;
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
+	}
 }

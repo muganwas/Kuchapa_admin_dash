@@ -24,7 +24,6 @@ import {
 	fetchServices,
 	updateMainCategory,
 } from '@/_helpers/data';
-import Link from 'next/link';
 import { logout } from '@/_helpers/authentication';
 import Cookies from 'js-cookie';
 
@@ -133,10 +132,12 @@ export default function Home() {
 
 	const onSubmitCategory: ReactEventHandler = async (e) => {
 		e.preventDefault();
-
 		let data;
 		if (!selectedElement) data = await createMainCategory(categoryName);
-		else data = await updateMainCategory(selectedElement.id);
+		else
+			data = await updateMainCategory(selectedElement.id, {
+				main_category: categoryName,
+			});
 		if (data.message === 'Error') return setFeedback(data.message);
 		if (data.result) getMainCategoryData();
 		else setFeedback(data.message);
@@ -329,7 +330,7 @@ export default function Home() {
 								<TextInput
 									id='category-name'
 									placeholder='Category Name'
-									value={selectedElement?.main_category}
+									defaultValue={selectedElement?.main_category}
 									onChange={(e) =>
 										setCategoryName((e.target as HTMLInputElement).value)
 									}
@@ -341,8 +342,8 @@ export default function Home() {
 									labelText={
 										selectedElement ? 'Update Category' : 'Add Category'
 									}
-									onClick={(e) => {
-										onSubmitCategory(e);
+									onClick={async (e) => {
+										await onSubmitCategory(e);
 										toggleMainCategoryModal(e);
 									}}
 								/>
@@ -427,6 +428,7 @@ export default function Home() {
 								<TextInput
 									id='sub-category-name'
 									placeholder='Sub Category Name'
+									defaultValue={selectedElement?.sub_category}
 									onChange={(e) =>
 										setSubCategoryName((e.target as HTMLInputElement).value)
 									}
@@ -545,6 +547,7 @@ export default function Home() {
 								<TextInput
 									id='service-name'
 									placeholder='Service Name'
+									defaultValue={selectedElement?.service_name}
 									onChange={(e) =>
 										setServiceName((e.target as HTMLInputElement).value)
 									}

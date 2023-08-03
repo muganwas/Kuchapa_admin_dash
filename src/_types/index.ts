@@ -10,6 +10,7 @@ export interface textInput {
 	type?: 'text' | 'number' | 'password';
 	value?: string | number;
 	placeholder?: string;
+	defaultValue?: string;
 	className?: string;
 	labelText?: string;
 	onChange: ReactEventHandler;

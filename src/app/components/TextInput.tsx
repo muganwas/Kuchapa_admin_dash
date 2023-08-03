@@ -4,7 +4,8 @@ export default function TextInput({
 	id,
 	type = 'text',
 	className,
-	value = '',
+	value,
+	defaultValue,
 	placeholder,
 	labelText,
 	onChange,
@@ -17,6 +18,7 @@ export default function TextInput({
 					id={id}
 					type={type}
 					value={value}
+					defaultValue={defaultValue}
 					onChange={onChange}
 					placeholder={placeholder}
 					className='w-full h-10 p-2 bg-gray/50 rounded'
