@@ -1,5 +1,5 @@
 import { SERVER_URL } from '@/_helpers/utils';
-import { mainCategory } from '@/app/home/page';
+import { mainCategory, service, subCategory } from '@/app/home/page';
 export async function fetchMainCategories(page = 1, limit = 7) {
 	const url = SERVER_URL + `main_category?page=${page}&limit=${limit}`;
 	try {
@@ -71,10 +71,10 @@ export async function createSubCategory(name: string, mainCategoryId = '') {
 }
 
 export async function createService(
-	name: string,
-	mainCategoryId = '',
-	subCategoryId = '',
-	image = name + '_p.png'
+	service_name: string,
+	main_category = '',
+	sub_category = '',
+	image = service_name + '_p.png'
 ) {
 	const url = SERVER_URL + 'service/create';
 	try {
@@ -85,9 +85,9 @@ export async function createService(
 				Connection: 'keep-alive',
 			},
 			body: JSON.stringify({
-				main_category: mainCategoryId,
-				sub_category: subCategoryId,
-				service_name: name,
+				main_category,
+				sub_category,
+				service_name,
 				image,
 			}),
 		});
@@ -100,6 +100,43 @@ export async function createService(
 
 export async function updateMainCategory(id = '', updateInfo: mainCategory) {
 	const url = SERVER_URL + 'main_category/';
+	try {
+		const response = await fetch(url, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Connection: 'keep-alive',
+			},
+			body: JSON.stringify({ id, updateInfo }),
+		});
+		const updateResults = await response.json();
+		return updateResults;
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
+	}
+}
+
+export async function updateSubCategory(id = '', updateInfo: subCategory) {
+	const url = SERVER_URL + 'sub_category/';
+	try {
+		const response = await fetch(url, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Connection: 'keep-alive',
+			},
+			body: JSON.stringify({ id, updateInfo }),
+		});
+		const updateResults = await response.json();
+		return updateResults;
+	} catch (e: any) {
+		return { message: 'Error', error: e.message };
+	}
+}
+
+export async function updateService(id = '', updateInfo: service) {
+	const url = SERVER_URL + 'service/';
+	updateInfo.image = updateInfo.service_name + '_p.png';
 	try {
 		const response = await fetch(url, {
 			method: 'PUT',

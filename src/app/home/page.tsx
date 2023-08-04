@@ -23,6 +23,8 @@ import {
 	createService,
 	fetchServices,
 	updateMainCategory,
+	updateSubCategory,
+	updateService,
 } from '@/_helpers/data';
 import { logout } from '@/_helpers/authentication';
 import Cookies from 'js-cookie';
@@ -43,6 +45,7 @@ export interface service {
 	main_category?: string;
 	sub_category?: string;
 	service_name?: string;
+	image?: string;
 }
 
 export type mainSubService = {
@@ -84,7 +87,7 @@ export default function Home() {
 	const subCategoryModal = useRef<HTMLDivElement | null>();
 	const serviceModal = useRef<HTMLDivElement | null>();
 
-	const [selectedElement, setSelectedItem] = useState<mainSubService>();
+	const [selectedItem, setSelectedItem] = useState<mainSubService>();
 
 	const [feedback, setFeedback] = useState('');
 
@@ -133,9 +136,9 @@ export default function Home() {
 	const onSubmitCategory: ReactEventHandler = async (e) => {
 		e.preventDefault();
 		let data;
-		if (!selectedElement) data = await createMainCategory(categoryName);
+		if (!selectedItem) data = await createMainCategory(categoryName);
 		else
-			data = await updateMainCategory(selectedElement.id, {
+			data = await updateMainCategory(selectedItem.id, {
 				main_category: categoryName,
 			});
 		if (data.message === 'Error') return setFeedback(data.message);
@@ -145,10 +148,17 @@ export default function Home() {
 
 	const onSubmitSubCategory: ReactEventHandler = async (e) => {
 		e.preventDefault();
-		const data = await createSubCategory(
-			subCategoryName,
-			subCategoryMainCategory?.id
-		);
+		let data;
+		if (!selectedItem)
+			data = await createSubCategory(
+				subCategoryName,
+				subCategoryMainCategory?.id
+			);
+		else
+			data = await updateSubCategory(selectedItem.id, {
+				sub_category: subCategoryName,
+				main_category: subCategoryMainCategory?.id,
+			});
 		if (data.message === 'Error') return setFeedback(data.message);
 		if (data.result) getSubCategoryData();
 		else setFeedback(data.message);
@@ -156,11 +166,19 @@ export default function Home() {
 
 	const onSubmitService: ReactEventHandler = async (e) => {
 		e.preventDefault();
-		const data = await createService(
-			serviceName,
-			servicesMainCategory?.id,
-			servicesSubCategory?.id
-		);
+		let data;
+		if (!selectedItem)
+			data = await createService(
+				serviceName,
+				servicesMainCategory?.id,
+				servicesSubCategory?.id
+			);
+		else
+			data = await updateService(selectedItem.id, {
+				service_name: serviceName,
+				main_category: servicesMainCategory?.id,
+				sub_category: servicesSubCategory?.id,
+			});
 		if (data.message === 'Error') return setFeedback(data.message);
 		if (data.result) getServicesData();
 		else setFeedback(data.message);
@@ -189,6 +207,7 @@ export default function Home() {
 			newClass = (originalClass as string).replace('hidden', '');
 		} else {
 			newClass = originalClass + 'hidden';
+			setSubCategoryName('');
 			setSelectedItem(undefined);
 		}
 		subCategoryModal.current?.setAttribute('class', newClass as string);
@@ -203,6 +222,7 @@ export default function Home() {
 			newClass = (originalClass as string).replace('hidden', '');
 		} else {
 			newClass = originalClass + 'hidden';
+			setServiceName('');
 			setSelectedItem(undefined);
 		}
 		serviceModal.current?.setAttribute('class', newClass as string);
@@ -322,15 +342,15 @@ export default function Home() {
 							className='flex flex-col bg-white w-1/2 p-5'
 						>
 							<span>
-								{selectedElement
-									? 'Update Main Category '
+								{selectedItem
+									? 'Update Main Category'
 									: 'Add New Main Category'}
 							</span>
 							<div className='flex flex-col py-2'>
 								<TextInput
 									id='category-name'
 									placeholder='Category Name'
-									defaultValue={selectedElement?.main_category}
+									defaultValue={selectedItem?.main_category}
 									onChange={(e) =>
 										setCategoryName((e.target as HTMLInputElement).value)
 									}
@@ -339,9 +359,7 @@ export default function Home() {
 							<div className='flex flex-col py-2'>
 								<Button
 									id='submit-category'
-									labelText={
-										selectedElement ? 'Update Category' : 'Add Category'
-									}
+									labelText={selectedItem ? 'Update Category' : 'Add Category'}
 									onClick={async (e) => {
 										await onSubmitCategory(e);
 										toggleMainCategoryModal(e);
@@ -409,7 +427,9 @@ export default function Home() {
 							onClick={formClicks}
 							className='flex flex-col bg-white w-1/2 p-5'
 						>
-							<span>Add New Sub Category</span>
+							<span>
+								{selectedItem ? 'Update Sub Category ' : 'Add New Sub Category'}
+							</span>
 							<div>
 								<DropDown
 									list={mainCategories?.map((category) => {
@@ -418,6 +438,7 @@ export default function Home() {
 											value: category.id,
 										};
 									})}
+									defaultValue={selectedItem?.main_category}
 									toSaveLabel='main_category'
 									selectedOption={subCategoryMainCategory?.main_category}
 									placeholder='Select Main Category'
@@ -428,7 +449,7 @@ export default function Home() {
 								<TextInput
 									id='sub-category-name'
 									placeholder='Sub Category Name'
-									defaultValue={selectedElement?.sub_category}
+									defaultValue={selectedItem?.sub_category}
 									onChange={(e) =>
 										setSubCategoryName((e.target as HTMLInputElement).value)
 									}
@@ -437,9 +458,11 @@ export default function Home() {
 							<div className='flex flex-col py-2'>
 								<Button
 									id='submit-sub-category'
-									labelText='Add Sub Category'
-									onClick={(e) => {
-										onSubmitSubCategory(e);
+									labelText={
+										selectedItem ? 'Update Sub Category ' : 'Add Sub Category'
+									}
+									onClick={async (e) => {
+										await onSubmitSubCategory(e);
 										toggleSubCategoryModal(e);
 									}}
 								/>
@@ -506,7 +529,7 @@ export default function Home() {
 							onClick={formClicks}
 							className='flex flex-col bg-white w-1/2 p-5'
 						>
-							<span>Add New Service</span>
+							<span>{selectedItem ? 'Update Service' : 'Add New Service'}</span>
 							<div>
 								<DropDown
 									list={mainCategories?.map((category) => {
@@ -515,20 +538,21 @@ export default function Home() {
 											value: category.id,
 										};
 									})}
+									defaultValue={selectedItem?.main_category}
 									toSaveLabel='main_category'
 									selectedOption={servicesMainCategory?.main_category}
 									placeholder='Select Main Category'
 									onClickItem={onChooseServicesMainCategory}
 								/>
 							</div>
-							{servicesMainCategory && (
+							{(servicesMainCategory || selectedItem) && (
 								<div>
 									<DropDown
 										list={subCategories?.map((category) => {
-											if (
-												category.main_category ===
-												servicesMainCategory.main_category
-											) {
+											const toCompare =
+												servicesMainCategory?.main_category ||
+												selectedItem?.main_category;
+											if (category.main_category === toCompare) {
 												return {
 													option: category.sub_category,
 													value: category.id,
@@ -536,6 +560,7 @@ export default function Home() {
 											}
 											return { option: '', value: '' };
 										})}
+										defaultValue={selectedItem?.sub_category}
 										toSaveLabel='sub_category'
 										selectedOption={servicesSubCategory?.sub_category}
 										placeholder='Select Sub Category'
@@ -547,7 +572,7 @@ export default function Home() {
 								<TextInput
 									id='service-name'
 									placeholder='Service Name'
-									defaultValue={selectedElement?.service_name}
+									defaultValue={selectedItem?.service_name}
 									onChange={(e) =>
 										setServiceName((e.target as HTMLInputElement).value)
 									}
@@ -556,9 +581,9 @@ export default function Home() {
 							<div className='flex flex-col py-2'>
 								<Button
 									id='submit-service'
-									labelText='Add Service'
-									onClick={(e) => {
-										onSubmitService(e);
+									labelText={selectedItem ? 'Update Service' : 'Add Service'}
+									onClick={async (e) => {
+										await onSubmitService(e);
 										toggleServicesModal(e);
 									}}
 								/>

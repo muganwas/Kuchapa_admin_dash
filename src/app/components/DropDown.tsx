@@ -10,6 +10,7 @@ export interface dropDown {
 	className?: string;
 	selectedOption: string | undefined;
 	placeholder: string;
+	defaultValue?: string;
 	toSaveLabel: string;
 	onClickItem: (e: any, callBack: () => void) => void;
 }
@@ -19,6 +20,7 @@ export default function DropDown({
 	selectedOption,
 	placeholder,
 	toSaveLabel,
+	defaultValue,
 	onClickItem,
 }: dropDown) {
 	const ddContainerRef = useRef<HTMLDivElement | null>();
@@ -36,10 +38,12 @@ export default function DropDown({
 		<div className={className || 'flex flex-col p-1'}>
 			<div
 				onClick={toggleDD}
-				className={`flex flex-1 p-2 ${selectedOption ? '' : 'text-black/50'}
+				className={`flex flex-1 p-2 ${
+					selectedOption || defaultValue ? '' : 'text-black/50'
+				}
 				} cursor-pointer border border-solid border-black/60`}
 			>
-				{selectedOption || placeholder}
+				{selectedOption || defaultValue || placeholder}
 			</div>
 			<div className='relative'>
 				<div
