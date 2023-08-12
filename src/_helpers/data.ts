@@ -74,7 +74,7 @@ export async function createService(
 	service_name: string,
 	main_category = '',
 	sub_category = '',
-	image = service_name + '_p.png'
+	image = service_name?.toLowerCase().replaceAll(' ', '_')
 ) {
 	const url = SERVER_URL + 'service/create';
 	try {
@@ -136,7 +136,9 @@ export async function updateSubCategory(id = '', updateInfo: subCategory) {
 
 export async function updateService(id = '', updateInfo: service) {
 	const url = SERVER_URL + 'service/';
-	updateInfo.image = updateInfo.service_name + '_p.png';
+	updateInfo.image = updateInfo.service_name
+		?.toLowerCase()
+		.replaceAll(' ', '_');
 	try {
 		const response = await fetch(url, {
 			method: 'PUT',
