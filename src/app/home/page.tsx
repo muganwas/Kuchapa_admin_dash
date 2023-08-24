@@ -209,6 +209,7 @@ export default function Home() {
 			newClass = originalClass + 'hidden';
 			setSubCategoryName('');
 			setSelectedItem(undefined);
+			setSubCategoryMainCategory(undefined);
 		}
 		subCategoryModal.current?.setAttribute('class', newClass as string);
 	};
@@ -224,6 +225,8 @@ export default function Home() {
 			newClass = originalClass + 'hidden';
 			setServiceName('');
 			setSelectedItem(undefined);
+			setServicesMainCategory(undefined);
+			setServicesSubCategory(undefined);
 		}
 		serviceModal.current?.setAttribute('class', newClass as string);
 	};
